@@ -15,3 +15,11 @@ class SkillMatch(BaseModel):
 class AnalyzeResponse(BaseModel):
     result: SkillMatch
     methodology: str
+
+
+class ResumeParseResponse(BaseModel):
+    filename: str
+    character_count: int
+    word_count: int
+    text: str
+    sections: dict[str, str]

@@ -8,6 +8,9 @@ The first backend slice provides:
 
 - FastAPI application structure
 - Health endpoint
+- Resume parsing endpoint: `POST /api/resume/parse`
+- PDF, DOCX and TXT resume upload with text extraction
+- Basic structured resume-section detection
 - Deterministic resume-to-job skill matching baseline
 - Explainable matched and missing skill output
 - Automated tests
