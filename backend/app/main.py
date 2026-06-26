@@ -7,7 +7,11 @@ from app.models import (
     SkillMatch,
 )
 from app.services.baseline_matcher import calculate_skill_match
-from app.services.document_parser import DocumentParseError, extract_text
+from app.services.document_parser import (
+    DocumentParseError,
+    MAX_FILE_SIZE_BYTES,
+    extract_text,
+)
 from app.services.section_parser import detect_sections
 
 
@@ -32,9 +36,12 @@ async def parse_resume(
     file: UploadFile = File(...),
 ) -> ResumeParseResponse:
     filename = file.filename or "resume"
-    content = await file.read()
+    content = await file.read(MAX_FILE_SIZE_BYTES + 1)
 
     try:
+        if len(content) > MAX_FILE_SIZE_BYTES:
+            raise DocumentParseError("The uploaded file exceeds the 5 MB limit.")
+
         text = extract_text(filename=filename, content=content)
     except DocumentParseError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc

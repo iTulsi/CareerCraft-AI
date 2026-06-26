@@ -4,7 +4,11 @@ from docx import Document
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.services.document_parser import DocumentParseError, extract_text
+from app.services.document_parser import (
+    DocumentParseError,
+    MAX_FILE_SIZE_BYTES,
+    extract_text,
+)
 from app.services.section_parser import detect_sections
 
 
@@ -90,6 +94,22 @@ def test_rejects_empty_text_file() -> None:
         assert "empty" in str(exc).lower()
     else:
         raise AssertionError("Expected DocumentParseError")
+
+
+def test_parse_resume_endpoint_rejects_oversized_upload() -> None:
+    response = client.post(
+        "/api/resume/parse",
+        files={
+            "file": (
+                "resume.txt",
+                b"a" * (MAX_FILE_SIZE_BYTES + 1),
+                "text/plain",
+            )
+        },
+    )
+
+    assert response.status_code == 422
+    assert "exceeds the 5 MB limit" in response.json()["detail"]
 
 
 def test_normalizes_common_pdf_ligatures() -> None:
