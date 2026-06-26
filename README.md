@@ -10,7 +10,9 @@ The first backend slice provides:
 - Health endpoint
 - Resume parsing endpoint: `POST /api/resume/parse`
 - PDF, DOCX and TXT resume upload with text extraction
-- Basic structured resume-section detection
+- Layout-aware PDF text extraction with DOCX and TXT support
+- Text normalization for common PDF ligatures and spacing artifacts
+- Structured resume-section detection, including flattened PDF layouts
 - Deterministic resume-to-job skill matching baseline
 - Explainable matched and missing skill output
 - Automated tests

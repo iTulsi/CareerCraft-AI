@@ -22,6 +22,8 @@ SECTION_ALIASES = {
         "work experience",
         "professional experience",
         "employment",
+        "experience and certification",
+        "experience and certifications",
     },
     "projects": {
         "projects",
@@ -52,24 +54,58 @@ def _normalize_heading(line: str) -> str:
     return re.sub(r"\s+", " ", normalized).strip()
 
 
+def _canonical_section(line: str) -> str | None:
+    normalized = _normalize_heading(line)
+
+    for canonical, aliases in SECTION_ALIASES.items():
+        if normalized in aliases:
+            return canonical
+
+    return None
+
+
+def _restore_flattened_headings(text: str) -> str:
+    aliases = sorted(
+        {
+            alias
+            for aliases in SECTION_ALIASES.values()
+            for alias in aliases
+        },
+        key=len,
+        reverse=True,
+    )
+
+    pattern = re.compile(
+        r"(?<![A-Za-z])(" +
+        "|".join(re.escape(alias) for alias in aliases) +
+        r")(?![A-Za-z])",
+        flags=re.IGNORECASE,
+    )
+
+    def add_line_breaks(match: re.Match[str]) -> str:
+        value = match.group(0)
+        letters = re.sub(r"[^A-Za-z]", "", value)
+
+        if letters and letters.isupper():
+            return f"\n{value}\n"
+
+        return value
+
+    return pattern.sub(add_line_breaks, text)
+
+
 def detect_sections(text: str) -> dict[str, str]:
+    prepared_text = _restore_flattened_headings(text)
+
     sections: dict[str, list[str]] = {"general": []}
     current_section = "general"
 
-    for raw_line in text.splitlines():
-        line = raw_line.strip()
+    for raw_line in prepared_text.splitlines():
+        line = raw_line.strip(" \t:-")
         if not line:
             continue
 
-        normalized = _normalize_heading(line)
-        detected_section = next(
-            (
-                canonical
-                for canonical, aliases in SECTION_ALIASES.items()
-                if normalized in aliases
-            ),
-            None,
-        )
+        detected_section = _canonical_section(line)
 
         if detected_section is not None:
             current_section = detected_section

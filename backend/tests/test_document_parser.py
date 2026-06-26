@@ -90,3 +90,28 @@ def test_rejects_empty_text_file() -> None:
         assert "empty" in str(exc).lower()
     else:
         raise AssertionError("Expected DocumentParseError")
+
+
+def test_normalizes_common_pdf_ligatures() -> None:
+    from app.services.document_parser import normalize_extracted_text
+
+    text = normalize_extracted_text(
+        "Machine learning \ufb01ne-tuning and \ufb02exible workflows."
+    )
+
+    assert text == "Machine learning fine-tuning and flexible workflows."
+
+
+def test_detects_sections_in_flattened_pdf_text() -> None:
+    flattened_text = (
+        "TULSI TOMAR PROFESSIONAL SUMMARY Python developer building AI systems. "
+        "TECHNICAL SKILLS Python FastAPI Docker PROJECTS CareerCraft AI "
+        "EDUCATION B.Tech Computer Science"
+    )
+
+    sections = detect_sections(flattened_text)
+
+    assert "Python developer" in sections["summary"]
+    assert "FastAPI" in sections["skills"]
+    assert "CareerCraft AI" in sections["projects"]
+    assert "B.Tech" in sections["education"]
