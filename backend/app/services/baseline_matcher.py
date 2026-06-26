@@ -45,7 +45,11 @@ def _normalize(text: str) -> str:
 
 def extract_skills(text: str, vocabulary: Iterable[str] = DEFAULT_SKILLS) -> set[str]:
     normalized = _normalize(text)
-    return {skill for skill in vocabulary if skill in normalized}
+    return {
+        skill
+        for skill in vocabulary
+        if re.search(rf"(?<![a-z0-9]){re.escape(skill)}(?![a-z0-9])", normalized)
+    }
 
 
 def calculate_skill_match(resume_text: str, job_description: str) -> dict[str, object]:
