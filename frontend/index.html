@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Explainable resume and job-description analysis."
+    />
+    <title>CareerCraft AI</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <p class="eyebrow">Explainable resume intelligence</p>
+        <h1>CareerCraft AI</h1>
+        <p class="subtitle">
+          Upload a resume, compare it with a job description, and see the exact
+          skills that matched or are still missing.
+        </p>
+      </header>
+
+      <section class="workspace" aria-label="Resume analysis workspace">
+        <article class="panel">
+          <div class="step-heading">
+            <span>1</span>
+            <div>
+              <h2>Resume</h2>
+              <p>PDF, DOCX, or TXT. Maximum size: 5 MB.</p>
+            </div>
+          </div>
+
+          <label class="file-picker" for="resume-file">
+            <strong>Choose resume file</strong>
+            <span id="file-name">No file selected</span>
+            <input
+              id="resume-file"
+              type="file"
+              accept=".pdf,.docx,.txt"
+            />
+          </label>
+
+          <button id="parse-button" class="secondary-button" type="button">
+            Extract resume text
+          </button>
+
+          <label for="resume-text">Extracted resume text</label>
+          <textarea
+            id="resume-text"
+            rows="13"
+            placeholder="Your parsed resume text will appear here. You can edit it before analysis."
+          ></textarea>
+        </article>
+
+        <article class="panel">
+          <div class="step-heading">
+            <span>2</span>
+            <div>
+              <h2>Job description</h2>
+              <p>Paste the complete role requirements for a useful comparison.</p>
+            </div>
+          </div>
+
+          <label for="job-description">Job description</label>
+          <textarea
+            id="job-description"
+            rows="18"
+            placeholder="Paste the job description here..."
+          ></textarea>
+
+          <button id="analyze-button" class="primary-button" type="button">
+            Analyze match
+          </button>
+        </article>
+      </section>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+
+      <section id="results" class="results" hidden aria-label="Analysis results">
+        <article class="score-card">
+          <p>Skill match</p>
+          <strong id="match-score">0%</strong>
+          <div class="score-track" aria-hidden="true">
+            <span id="score-bar"></span>
+          </div>
+        </article>
+
+        <article class="result-card">
+          <h2>Matched skills</h2>
+          <div id="matched-skills" class="tags"></div>
+        </article>
+
+        <article class="result-card">
+          <h2>Missing skills</h2>
+          <div id="missing-skills" class="tags"></div>
+        </article>
+
+        <article class="result-card methodology-card">
+          <h2>How this score was calculated</h2>
+          <p id="methodology"></p>
+        </article>
+      </section>
+    </main>
+
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

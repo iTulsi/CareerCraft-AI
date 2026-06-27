@@ -1,4 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.models import (
     AnalyzeRequest,
@@ -15,11 +19,25 @@ from app.services.document_parser import (
 from app.services.section_parser import detect_sections
 
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+FRONTEND_DIR = PROJECT_ROOT / "frontend"
+
 app = FastAPI(
     title="CareerCraft AI API",
     version="0.2.0",
     description="Explainable resume-to-job matching and interview intelligence.",
 )
+
+app.mount(
+    "/static",
+    StaticFiles(directory=FRONTEND_DIR / "static"),
+    name="static",
+)
+
+
+@app.get("/", include_in_schema=False)
+def home() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "index.html")
 
 
 @app.get("/api/health")
