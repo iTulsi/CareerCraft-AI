@@ -287,6 +287,33 @@ textarea::placeholder {
   transition: width 500ms ease;
 }
 
+.score-breakdown {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.score-breakdown div {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.score-breakdown span {
+  display: block;
+  color: #949caf;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.score-breakdown strong {
+  margin-top: 5px;
+  font-size: 1.45rem;
+  letter-spacing: -0.03em;
+}
+
 .result-card h2 {
   margin-bottom: 18px;
   font-size: 1rem;
@@ -308,6 +335,28 @@ textarea::placeholder {
   font-weight: 750;
 }
 
+.result-label {
+  margin: 18px 0 9px;
+  color: #949caf;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.result-label:first-of-type {
+  margin-top: 0;
+}
+
+.recommendations {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-left: 20px;
+  color: #cbd1df;
+  line-height: 1.6;
+}
+
 .empty-state,
 .methodology-card p {
   margin: 0;
@@ -325,7 +374,8 @@ textarea::placeholder {
   }
 
   .workspace,
-  .results {
+  .results,
+  .score-breakdown {
     grid-template-columns: 1fr;
   }
 }

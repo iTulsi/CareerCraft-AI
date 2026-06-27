@@ -79,10 +79,20 @@
 
       <section id="results" class="results" hidden aria-label="Analysis results">
         <article class="score-card">
-          <p>Skill match</p>
+          <p>Overall match</p>
           <strong id="match-score">0%</strong>
           <div class="score-track" aria-hidden="true">
             <span id="score-bar"></span>
+          </div>
+          <div class="score-breakdown">
+            <div>
+              <span>Skill coverage</span>
+              <strong id="skill-score">0%</strong>
+            </div>
+            <div>
+              <span>Resume structure</span>
+              <strong id="structure-score">0%</strong>
+            </div>
           </div>
         </article>
 
@@ -94,6 +104,19 @@
         <article class="result-card">
           <h2>Missing skills</h2>
           <div id="missing-skills" class="tags"></div>
+        </article>
+
+        <article class="result-card">
+          <h2>Resume sections</h2>
+          <p class="result-label">Found</p>
+          <div id="found-sections" class="tags"></div>
+          <p class="result-label">Missing</p>
+          <div id="missing-sections" class="tags"></div>
+        </article>
+
+        <article class="result-card">
+          <h2>Recommended next steps</h2>
+          <ul id="recommendations" class="recommendations"></ul>
         </article>
 
         <article class="result-card methodology-card">

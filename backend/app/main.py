@@ -6,11 +6,12 @@ from fastapi.staticfiles import StaticFiles
 
 from app.models import (
     AnalyzeRequest,
+    AnalysisAssessment,
     AnalyzeResponse,
     ResumeParseResponse,
     SkillMatch,
 )
-from app.services.baseline_matcher import calculate_skill_match
+from app.services.analysis_service import calculate_resume_assessment
 from app.services.document_parser import (
     DocumentParseError,
     MAX_FILE_SIZE_BYTES,
@@ -75,15 +76,16 @@ async def parse_resume(
 
 @app.post("/api/analyze", response_model=AnalyzeResponse)
 def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
-    raw_result = calculate_skill_match(
+    skill_match, assessment = calculate_resume_assessment(
         resume_text=payload.resume_text,
         job_description=payload.job_description,
     )
 
     return AnalyzeResponse(
-        result=SkillMatch(**raw_result),
+        result=SkillMatch(**skill_match),
+        assessment=AnalysisAssessment(**assessment),
         methodology=(
-            "Deterministic skill-overlap baseline. Embedding retrieval, "
-            "section-aware scoring and LLM explanations will be added next."
+            "Deterministic heuristic, not an employer ATS score: "
+            "75% job-skill coverage and 25% resume-section coverage."
         ),
     )

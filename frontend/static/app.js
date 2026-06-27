@@ -7,9 +7,14 @@ const jobDescription = document.querySelector("#job-description");
 const statusMessage = document.querySelector("#status");
 const results = document.querySelector("#results");
 const matchScore = document.querySelector("#match-score");
+const skillScore = document.querySelector("#skill-score");
+const structureScore = document.querySelector("#structure-score");
 const scoreBar = document.querySelector("#score-bar");
 const matchedSkills = document.querySelector("#matched-skills");
 const missingSkills = document.querySelector("#missing-skills");
+const foundSections = document.querySelector("#found-sections");
+const missingSections = document.querySelector("#missing-sections");
+const recommendations = document.querySelector("#recommendations");
 const methodology = document.querySelector("#methodology");
 
 fileInput.addEventListener("change", () => {
@@ -101,11 +106,24 @@ async function analyzeResume() {
 }
 
 function renderResults(payload) {
-  const score = payload.result.match_score;
+  const score = payload.assessment.overall_score;
   matchScore.textContent = `${score}%`;
+  skillScore.textContent = `${payload.assessment.skill_score}%`;
+  structureScore.textContent = `${payload.assessment.structure_score}%`;
   scoreBar.style.width = `${Math.min(Math.max(score, 0), 100)}%`;
   renderTags(matchedSkills, payload.result.matched_skills, "No matched skills");
   renderTags(missingSkills, payload.result.missing_skills, "No missing skills");
+  renderTags(
+    foundSections,
+    payload.assessment.found_sections,
+    "No standard sections detected"
+  );
+  renderTags(
+    missingSections,
+    payload.assessment.missing_sections,
+    "No standard sections missing"
+  );
+  renderRecommendations(payload.assessment.recommendations);
   methodology.textContent = payload.methodology;
   results.hidden = false;
   results.scrollIntoView({behavior: "smooth", block: "start"});
@@ -126,6 +144,16 @@ function renderTags(container, skills, emptyMessage) {
     const tag = document.createElement("span");
     tag.textContent = skill;
     container.append(tag);
+  }
+}
+
+function renderRecommendations(items) {
+  recommendations.replaceChildren();
+
+  for (const item of items) {
+    const listItem = document.createElement("li");
+    listItem.textContent = item;
+    recommendations.append(listItem);
   }
 }
 

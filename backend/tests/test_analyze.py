@@ -6,12 +6,15 @@ from app.main import app
 client = TestClient(app)
 
 
-def test_analyze_endpoint_returns_skill_match() -> None:
+def test_analyze_endpoint_returns_explainable_assessment() -> None:
     response = client.post(
         "/api/analyze",
         json={
             "resume_text": (
-                "Built Python and FastAPI services with React, Docker and Git."
+                "Skills\nPython, FastAPI, React, Docker\n"
+                "Experience\nBuilt reliable Python services.\n"
+                "Projects\nCreated a React analytics dashboard.\n"
+                "Education\nB.Tech in Computer Science."
             ),
             "job_description": (
                 "Seeking Python, FastAPI, React, Docker and AWS experience."
@@ -29,6 +32,17 @@ def test_analyze_endpoint_returns_skill_match() -> None:
     ]
     assert payload["result"]["missing_skills"] == ["aws"]
     assert payload["result"]["match_score"] == 80.0
+    assert payload["assessment"]["skill_score"] == 80.0
+    assert payload["assessment"]["structure_score"] == 100.0
+    assert payload["assessment"]["overall_score"] == 85.0
+    assert payload["assessment"]["found_sections"] == [
+        "Skills",
+        "Experience",
+        "Projects",
+        "Education",
+    ]
+    assert payload["assessment"]["missing_sections"] == []
+    assert "not an employer ATS score" in payload["methodology"]
 
 
 def test_analyze_rejects_short_resume() -> None:

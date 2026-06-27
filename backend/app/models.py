@@ -12,8 +12,18 @@ class SkillMatch(BaseModel):
     match_score: float
 
 
+class AnalysisAssessment(BaseModel):
+    overall_score: float
+    skill_score: float
+    structure_score: float
+    found_sections: list[str]
+    missing_sections: list[str]
+    recommendations: list[str]
+
+
 class AnalyzeResponse(BaseModel):
     result: SkillMatch
+    assessment: AnalysisAssessment
     methodology: str
 
 
