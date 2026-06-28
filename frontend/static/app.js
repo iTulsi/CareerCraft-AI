@@ -18,16 +18,23 @@ const foundSections = document.querySelector("#found-sections");
 const missingSections = document.querySelector("#missing-sections");
 const recommendations = document.querySelector("#recommendations");
 const methodology = document.querySelector("#methodology");
+const downloadReportButton = document.querySelector(
+  "#download-report-button"
+);
+
+let latestAnalysis = null;
 
 fileInput.addEventListener("change", () => {
   const file = fileInput.files[0];
   fileName.textContent = file ? file.name : "No file selected";
+  latestAnalysis = null;
   results.hidden = true;
   setStatus("");
 });
 
 parseButton.addEventListener("click", parseResume);
 analyzeButton.addEventListener("click", analyzeResume);
+downloadReportButton.addEventListener("click", downloadAnalysisReport);
 
 async function parseResume() {
   const file = fileInput.files[0];
@@ -109,6 +116,7 @@ async function analyzeResume() {
 }
 
 function renderResults(payload) {
+  latestAnalysis = payload;
   const score = payload.assessment.overall_score;
   matchScore.textContent = `${score}%`;
   skillScore.textContent = `${payload.assessment.skill_score}%`;
@@ -165,6 +173,82 @@ function renderRecommendations(items) {
     listItem.textContent = item;
     recommendations.append(listItem);
   }
+}
+
+function downloadAnalysisReport() {
+  if (!latestAnalysis) {
+    setStatus("Run an analysis before downloading a report.", true);
+    return;
+  }
+
+  const report = buildTextReport(latestAnalysis);
+  const blob = new Blob([report], {type: "text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const date = new Date().toISOString().slice(0, 10);
+
+  link.href = url;
+  link.download = `careercraft-analysis-${date}.txt`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  setStatus("Analysis report downloaded.");
+}
+
+function buildTextReport(payload) {
+  const semantic =
+    payload.semantic.status === "available"
+      ? `${payload.semantic.score}%`
+      : `Unavailable — ${payload.semantic.note}`;
+
+  return [
+    "CareerCraft AI Analysis Report",
+    "================================",
+    `Generated: ${new Date().toLocaleString()}`,
+    `Resume: ${fileInput.files[0]?.name || "Pasted resume text"}`,
+    "",
+    "Scores",
+    "------",
+    `Overall match: ${payload.assessment.overall_score}%`,
+    `Skill coverage: ${payload.assessment.skill_score}%`,
+    `Resume structure: ${payload.assessment.structure_score}%`,
+    `Semantic similarity: ${semantic}`,
+    "",
+    "Matched skills",
+    "--------------",
+    formatReportList(payload.result.matched_skills),
+    "",
+    "Missing skills",
+    "--------------",
+    formatReportList(payload.result.missing_skills),
+    "",
+    "Detected resume sections",
+    "------------------------",
+    formatReportList(payload.assessment.found_sections),
+    "",
+    "Missing resume sections",
+    "-----------------------",
+    formatReportList(payload.assessment.missing_sections),
+    "",
+    "Recommended next steps",
+    "----------------------",
+    formatReportList(payload.assessment.recommendations),
+    "",
+    "Methodology",
+    "-----------",
+    payload.methodology,
+    "",
+  ].join("\n");
+}
+
+function formatReportList(items) {
+  if (items.length === 0) {
+    return "- None";
+  }
+
+  return items.map((item) => `- ${item}`).join("\n");
 }
 
 function setBusy(button, isBusy, label) {

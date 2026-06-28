@@ -376,6 +376,14 @@ textarea::placeholder {
   grid-column: 1 / -1;
 }
 
+.report-actions {
+  grid-column: 1 / -1;
+}
+
+.report-actions .secondary-button {
+  margin-top: 0;
+}
+
 @media (max-width: 800px) {
   .shell {
     padding-top: 44px;
