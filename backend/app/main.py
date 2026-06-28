@@ -1,3 +1,4 @@
+from app.report_download import router as report_download_router
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -8,11 +9,13 @@ from app.models import (
     AnalyzeRequest,
     AnalysisAssessment,
     AnalyzeResponse,
+    InterviewQuestion,
     ResumeParseResponse,
     SemanticMatch,
     SkillMatch,
 )
 from app.services.analysis_service import calculate_resume_assessment
+from app.services.interview_questions import build_interview_questions
 from app.services.document_parser import (
     DocumentParseError,
     MAX_FILE_SIZE_BYTES,
@@ -34,6 +37,8 @@ app = FastAPI(
     version="0.3.0",
     description="Explainable resume-to-job matching and interview intelligence.",
 )
+
+app.include_router(report_download_router)
 
 app.mount(
     "/static",
@@ -87,11 +92,20 @@ def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
         job_description=payload.job_description,
     )
     semantic = _semantic_result(payload)
+    interview_questions = build_interview_questions(
+        matched_skills=list(skill_match["matched_skills"]),
+        missing_skills=list(skill_match["missing_skills"]),
+        found_sections=list(assessment["found_sections"]),
+    )
 
     return AnalyzeResponse(
         result=SkillMatch(**skill_match),
         assessment=AnalysisAssessment(**assessment),
         semantic=semantic,
+        interview_questions=[
+            InterviewQuestion(**question)
+            for question in interview_questions
+        ],
         methodology=(
             "Deterministic heuristic, not an employer ATS score: "
             "75% job-skill coverage and 25% resume-section coverage. "

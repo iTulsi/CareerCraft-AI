@@ -45,6 +45,14 @@ def test_analyze_endpoint_returns_explainable_assessment() -> None:
     assert payload["assessment"]["missing_sections"] == []
     assert payload["semantic"]["status"] == "not_requested"
     assert payload["semantic"]["score"] is None
+
+    questions = payload["interview_questions"]
+    assert any(item["category"] == "technical" for item in questions)
+    assert any(item["category"] == "learning_gap" for item in questions)
+    assert any(item["category"] == "behavioral" for item in questions)
+    assert all(item["question"] for item in questions)
+    assert all(item["answer_outline"] for item in questions)
+
     assert "not an employer ATS score" in payload["methodology"]
 
 
