@@ -365,6 +365,56 @@ textarea::placeholder {
   line-height: 1.6;
 }
 
+.interview-card {
+  grid-column: 1 / -1;
+}
+
+.interview-intro {
+  margin: -6px 0 18px;
+  color: #949caf;
+  line-height: 1.5;
+}
+
+.interview-questions {
+  display: grid;
+  gap: 12px;
+}
+
+.interview-question {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.interview-question summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  color: #edf0f7;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.interview-category {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border-radius: 7px;
+  background: rgba(120, 95, 255, 0.16);
+  color: #bdb2ff;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.interview-question p {
+  margin: 14px 0 0;
+  padding-left: 4px;
+  color: #aeb5c6;
+  line-height: 1.6;
+}
+
 .empty-state,
 .methodology-card p {
   margin: 0;

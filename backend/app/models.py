@@ -31,10 +31,17 @@ class SemanticMatch(BaseModel):
     note: str
 
 
+class InterviewQuestion(BaseModel):
+    category: Literal["technical", "learning_gap", "behavioral"]
+    question: str
+    answer_outline: str
+
+
 class AnalyzeResponse(BaseModel):
     result: SkillMatch
     assessment: AnalysisAssessment
     semantic: SemanticMatch
+    interview_questions: list[InterviewQuestion]
     methodology: str
 
 
