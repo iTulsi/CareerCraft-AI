@@ -29,3 +29,27 @@ def test_semantic_similarity_rejects_zero_vectors() -> None:
             "Job description",
             encoder=fake_encoder,
         )
+
+
+
+def test_similarity_accepts_array_like_vectors() -> None:
+    from app.services.embedding_matcher import calculate_semantic_similarity
+
+    class ArrayLikeVector(list):
+        def __bool__(self) -> bool:
+            raise ValueError("The truth value is ambiguous.")
+
+    def encoder(texts: list[str]) -> list[ArrayLikeVector]:
+        assert len(texts) == 2
+        return [
+            ArrayLikeVector([1.0, 0.0]),
+            ArrayLikeVector([1.0, 0.0]),
+        ]
+
+    score = calculate_semantic_similarity(
+        "Python FastAPI developer",
+        "Python API engineer",
+        encoder=encoder,
+    )
+
+    assert score == 100.0

@@ -52,7 +52,7 @@ def _cosine_similarity(
     left: Sequence[float],
     right: Sequence[float],
 ) -> float:
-    if len(left) != len(right) or not left:
+    if len(left) != len(right) or len(left) == 0:
         raise ValueError("Embedding vectors must have the same non-zero length.")
 
     dot_product = sum(
