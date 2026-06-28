@@ -17,6 +17,7 @@ const missingSkills = document.querySelector("#missing-skills");
 const foundSections = document.querySelector("#found-sections");
 const missingSections = document.querySelector("#missing-sections");
 const recommendations = document.querySelector("#recommendations");
+const interviewQuestions = document.querySelector("#interview-questions");
 const methodology = document.querySelector("#methodology");
 const downloadReportButton = document.querySelector(
   "#download-report-button"
@@ -136,6 +137,7 @@ function renderResults(payload) {
     "No standard sections missing"
   );
   renderRecommendations(payload.assessment.recommendations);
+  renderInterviewQuestions(payload.interview_questions);
   methodology.textContent = payload.methodology;
   results.hidden = false;
   results.scrollIntoView({behavior: "smooth", block: "start"});
@@ -175,80 +177,64 @@ function renderRecommendations(items) {
   }
 }
 
-function downloadAnalysisReport() {
+function downloadAnalysisReport(event) {
+  event.preventDefault();
+
   if (!latestAnalysis) {
     setStatus("Run an analysis before downloading a report.", true);
     return;
   }
 
-  const report = buildTextReport(latestAnalysis);
-  const blob = new Blob([report], {type: "text/plain;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  const date = new Date().toISOString().slice(0, 10);
+  const form = document.createElement("form");
+  const payloadInput = document.createElement("input");
 
-  link.href = url;
-  link.download = `careercraft-analysis-${date}.txt`;
-  document.body.append(link);
-  link.click();
-  link.remove();
+  form.method = "POST";
+  form.action = "/api/report";
+  form.hidden = true;
 
-  window.setTimeout(() => URL.revokeObjectURL(url), 0);
-  setStatus("Analysis report downloaded.");
+  payloadInput.type = "hidden";
+  payloadInput.name = "payload";
+  payloadInput.value = JSON.stringify(latestAnalysis);
+
+  form.append(payloadInput);
+  document.body.append(form);
+  form.submit();
+  form.remove();
+
+  setStatus("Analysis report download started.");
 }
 
-function buildTextReport(payload) {
-  const semantic =
-    payload.semantic.status === "available"
-      ? `${payload.semantic.score}%`
-      : `Unavailable — ${payload.semantic.note}`;
+function renderInterviewQuestions(items) {
+  interviewQuestions.replaceChildren();
 
-  return [
-    "CareerCraft AI Analysis Report",
-    "================================",
-    `Generated: ${new Date().toLocaleString()}`,
-    `Resume: ${fileInput.files[0]?.name || "Pasted resume text"}`,
-    "",
-    "Scores",
-    "------",
-    `Overall match: ${payload.assessment.overall_score}%`,
-    `Skill coverage: ${payload.assessment.skill_score}%`,
-    `Resume structure: ${payload.assessment.structure_score}%`,
-    `Semantic similarity: ${semantic}`,
-    "",
-    "Matched skills",
-    "--------------",
-    formatReportList(payload.result.matched_skills),
-    "",
-    "Missing skills",
-    "--------------",
-    formatReportList(payload.result.missing_skills),
-    "",
-    "Detected resume sections",
-    "------------------------",
-    formatReportList(payload.assessment.found_sections),
-    "",
-    "Missing resume sections",
-    "-----------------------",
-    formatReportList(payload.assessment.missing_sections),
-    "",
-    "Recommended next steps",
-    "----------------------",
-    formatReportList(payload.assessment.recommendations),
-    "",
-    "Methodology",
-    "-----------",
-    payload.methodology,
-    "",
-  ].join("\n");
-}
+  for (const item of items) {
+    const details = document.createElement("details");
+    details.className = "interview-question";
 
-function formatReportList(items) {
-  if (items.length === 0) {
-    return "- None";
+    const summary = document.createElement("summary");
+    const category = document.createElement("span");
+    const question = document.createElement("span");
+    const answer = document.createElement("p");
+
+    category.className = "interview-category";
+    category.textContent = item.category.replace("_", " ");
+    question.textContent = item.question;
+    answer.textContent = `Answer outline: ${item.answer_outline}`;
+
+    summary.append(category, question);
+    details.append(summary, answer);
+    interviewQuestions.append(details);
   }
+}
 
-  return items.map((item) => `- ${item}`).join("\n");
+function formatInterviewQuestions(items) {
+  return items
+    .map(
+      (item, index) =>
+        `${index + 1}. [${item.category.replace("_", " ")}] ` +
+        `${item.question}\n   Answer outline: ${item.answer_outline}`
+    )
+    .join("\n");
 }
 
 function setBusy(button, isBusy, label) {

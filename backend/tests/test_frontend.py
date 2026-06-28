@@ -11,7 +11,7 @@ def test_home_page_is_served() -> None:
 
     assert response.status_code == 200
     assert "CareerCraft AI" in response.text
-    assert 'src="/static/app.js"' in response.text
+    assert 'src="/static/app.js' in response.text
 
 
 def test_frontend_static_assets_are_served() -> None:
