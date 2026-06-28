@@ -45,6 +45,11 @@ def test_analyze_endpoint_returns_explainable_assessment() -> None:
     assert payload["assessment"]["missing_sections"] == []
     assert payload["semantic"]["status"] == "not_requested"
     assert payload["semantic"]["score"] is None
+    assert payload["evaluation"]["status"] == "not_requested"
+    assert payload["evaluation"]["deterministic_score"] == 80.0
+    assert payload["evaluation"]["semantic_score"] is None
+    assert payload["evaluation"]["score_gap"] is None
+    assert payload["evaluation"]["gap_category"] == "not_available"
 
     questions = payload["interview_questions"]
     assert any(item["category"] == "technical" for item in questions)
@@ -84,6 +89,13 @@ def test_analyze_returns_semantic_similarity_when_requested(
     assert semantic["status"] == "available"
     assert semantic["score"] == 78.25
     assert "not a hiring probability" in semantic["note"]
+
+    evaluation = response.json()["evaluation"]
+    assert evaluation["status"] == "available"
+    assert evaluation["deterministic_score"] == 100.0
+    assert evaluation["semantic_score"] == 78.25
+    assert evaluation["score_gap"] == 21.75
+    assert evaluation["gap_category"] == "moderate"
 
 
 def test_analyze_rejects_short_resume() -> None:

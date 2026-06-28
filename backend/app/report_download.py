@@ -48,6 +48,41 @@ def _format_questions(value: Any) -> str:
     return "\n\n".join(formatted)
 
 
+def _format_evaluation(value: Any) -> str:
+    evaluation = _mapping(value)
+
+    if not evaluation:
+        return "Not included in this report payload."
+
+    deterministic_score = evaluation.get("deterministic_score", "—")
+    interpretation = str(
+        evaluation.get("interpretation", "Not provided.")
+    )
+    lines = [
+        f"Explicit skill coverage: {deterministic_score}%",
+    ]
+
+    if evaluation.get("status") == "available":
+        semantic_score = evaluation.get("semantic_score", "—")
+        score_gap = evaluation.get("score_gap", "—")
+        category = str(
+            evaluation.get("gap_category", "unknown")
+        ).replace("_", " ")
+
+        lines.extend(
+            [
+                f"Semantic similarity: {semantic_score}%",
+                f"Score difference: {score_gap} points",
+                f"Difference category: {category}",
+            ]
+        )
+    else:
+        lines.append("Semantic comparison: unavailable")
+
+    lines.append(f"Interpretation: {interpretation}")
+    return "\n".join(lines)
+
+
 def build_analysis_report(payload: dict[str, Any]) -> str:
     assessment = _mapping(payload.get("assessment"))
     result = _mapping(payload.get("result"))

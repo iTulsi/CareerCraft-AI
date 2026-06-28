@@ -124,6 +124,30 @@
           <ul id="recommendations" class="recommendations"></ul>
         </article>
 
+        <article class="result-card comparison-card">
+          <h2>Deterministic vs semantic comparison</h2>
+
+          <div class="comparison-grid">
+            <div>
+              <span>Explicit skill coverage</span>
+              <strong id="evaluation-deterministic">0%</strong>
+            </div>
+
+            <div>
+              <span>Semantic similarity</span>
+              <strong id="evaluation-semantic">—</strong>
+            </div>
+
+            <div>
+              <span>Score difference</span>
+              <strong id="evaluation-gap">—</strong>
+            </div>
+          </div>
+
+          <p id="evaluation-category" class="comparison-category"></p>
+          <p id="evaluation-interpretation"></p>
+        </article>
+
         <article class="result-card interview-card">
           <h2>Interview practice</h2>
           <p class="interview-intro">
@@ -149,6 +173,6 @@
       </section>
     </main>
 
-    <script src="/static/app.js?v=5" defer></script>
+    <script src="/static/app.js?v=6" defer></script>
   </body>
 </html>
