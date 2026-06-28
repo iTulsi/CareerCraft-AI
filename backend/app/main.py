@@ -9,6 +9,7 @@ from app.models import (
     AnalysisAssessment,
     AnalyzeResponse,
     ResumeParseResponse,
+    SemanticMatch,
     SkillMatch,
 )
 from app.services.analysis_service import calculate_resume_assessment
@@ -16,6 +17,11 @@ from app.services.document_parser import (
     DocumentParseError,
     MAX_FILE_SIZE_BYTES,
     extract_text,
+)
+from app.services.embedding_matcher import (
+    MODEL_NAME,
+    SemanticModelUnavailable,
+    calculate_semantic_similarity,
 )
 from app.services.section_parser import detect_sections
 
@@ -25,7 +31,7 @@ FRONTEND_DIR = PROJECT_ROOT / "frontend"
 
 app = FastAPI(
     title="CareerCraft AI API",
-    version="0.2.0",
+    version="0.3.0",
     description="Explainable resume-to-job matching and interview intelligence.",
 )
 
@@ -46,7 +52,7 @@ def health() -> dict[str, str]:
     return {
         "status": "ok",
         "service": "careercraft-ai",
-        "version": "0.2.0",
+        "version": "0.3.0",
     }
 
 
@@ -80,12 +86,52 @@ def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
         resume_text=payload.resume_text,
         job_description=payload.job_description,
     )
+    semantic = _semantic_result(payload)
 
     return AnalyzeResponse(
         result=SkillMatch(**skill_match),
         assessment=AnalysisAssessment(**assessment),
+        semantic=semantic,
         methodology=(
             "Deterministic heuristic, not an employer ATS score: "
-            "75% job-skill coverage and 25% resume-section coverage."
+            "75% job-skill coverage and 25% resume-section coverage. "
+            "Semantic similarity is shown separately and is not included "
+            "in the overall score until it is validated on labelled data."
+        ),
+    )
+
+
+def _semantic_result(payload: AnalyzeRequest) -> SemanticMatch:
+    if not payload.include_semantic:
+        return SemanticMatch(
+            status="not_requested",
+            score=None,
+            model=MODEL_NAME,
+            note="Semantic comparison was not requested.",
+        )
+
+    try:
+        score = calculate_semantic_similarity(
+            resume_text=payload.resume_text,
+            job_description=payload.job_description,
+        )
+    except SemanticModelUnavailable:
+        return SemanticMatch(
+            status="unavailable",
+            score=None,
+            model=MODEL_NAME,
+            note=(
+                "Install backend/requirements-ml.txt to enable local "
+                "semantic comparison."
+            ),
+        )
+
+    return SemanticMatch(
+        status="available",
+        score=score,
+        model=MODEL_NAME,
+        note=(
+            "Cosine similarity from a pretrained embedding model; "
+            "this is not a hiring probability."
         ),
     )

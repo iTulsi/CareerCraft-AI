@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 
+import app.main as main_module
 from app.main import app
 
 
@@ -42,7 +43,39 @@ def test_analyze_endpoint_returns_explainable_assessment() -> None:
         "Education",
     ]
     assert payload["assessment"]["missing_sections"] == []
+    assert payload["semantic"]["status"] == "not_requested"
+    assert payload["semantic"]["score"] is None
     assert "not an employer ATS score" in payload["methodology"]
+
+
+def test_analyze_returns_semantic_similarity_when_requested(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(
+        main_module,
+        "calculate_semantic_similarity",
+        lambda **_: 78.25,
+    )
+
+    response = client.post(
+        "/api/analyze",
+        json={
+            "resume_text": (
+                "Skills\nPython and FastAPI\n"
+                "Projects\nBuilt a production API service."
+            ),
+            "job_description": (
+                "Seeking an engineer to build Python API systems with FastAPI."
+            ),
+            "include_semantic": True,
+        },
+    )
+
+    assert response.status_code == 200
+    semantic = response.json()["semantic"]
+    assert semantic["status"] == "available"
+    assert semantic["score"] == 78.25
+    assert "not a hiring probability" in semantic["note"]
 
 
 def test_analyze_rejects_short_resume() -> None:

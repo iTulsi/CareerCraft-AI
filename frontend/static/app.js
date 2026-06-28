@@ -9,6 +9,8 @@ const results = document.querySelector("#results");
 const matchScore = document.querySelector("#match-score");
 const skillScore = document.querySelector("#skill-score");
 const structureScore = document.querySelector("#structure-score");
+const semanticScore = document.querySelector("#semantic-score");
+const semanticStatus = document.querySelector("#semantic-status");
 const scoreBar = document.querySelector("#score-bar");
 const matchedSkills = document.querySelector("#matched-skills");
 const missingSkills = document.querySelector("#missing-skills");
@@ -88,6 +90,7 @@ async function analyzeResume() {
       body: JSON.stringify({
         resume_text: resume,
         job_description: job,
+        include_semantic: true,
       }),
     });
     const payload = await readJson(response);
@@ -110,6 +113,7 @@ function renderResults(payload) {
   matchScore.textContent = `${score}%`;
   skillScore.textContent = `${payload.assessment.skill_score}%`;
   structureScore.textContent = `${payload.assessment.structure_score}%`;
+  renderSemanticMatch(payload.semantic);
   scoreBar.style.width = `${Math.min(Math.max(score, 0), 100)}%`;
   renderTags(matchedSkills, payload.result.matched_skills, "No matched skills");
   renderTags(missingSkills, payload.result.missing_skills, "No missing skills");
@@ -127,6 +131,12 @@ function renderResults(payload) {
   methodology.textContent = payload.methodology;
   results.hidden = false;
   results.scrollIntoView({behavior: "smooth", block: "start"});
+}
+
+function renderSemanticMatch(semantic) {
+  semanticScore.textContent =
+    semantic.status === "available" ? `${semantic.score}%` : "—";
+  semanticStatus.textContent = semantic.note;
 }
 
 function renderTags(container, skills, emptyMessage) {

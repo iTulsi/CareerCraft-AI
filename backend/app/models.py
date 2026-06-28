@@ -1,9 +1,12 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
 class AnalyzeRequest(BaseModel):
     resume_text: str = Field(min_length=30)
     job_description: str = Field(min_length=30)
+    include_semantic: bool = False
 
 
 class SkillMatch(BaseModel):
@@ -21,9 +24,17 @@ class AnalysisAssessment(BaseModel):
     recommendations: list[str]
 
 
+class SemanticMatch(BaseModel):
+    status: Literal["available", "unavailable", "not_requested"]
+    score: float | None = Field(default=None, ge=0, le=100)
+    model: str
+    note: str
+
+
 class AnalyzeResponse(BaseModel):
     result: SkillMatch
     assessment: AnalysisAssessment
+    semantic: SemanticMatch
     methodology: str
 
 
