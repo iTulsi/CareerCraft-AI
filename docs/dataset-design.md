@@ -147,3 +147,43 @@ Reviewers must use only job-relevant evidence.
 Dataset-bias risk: A narrow dataset may overrepresent specific roles,
 industries, seniority levels, writing styles, or resume formats. The dataset
 should include diverse job families and candidate backgrounds.
+
+## Running the Baseline Benchmark
+
+Run the deterministic benchmark against the included synthetic smoke-test
+dataset:
+
+```bash
+make benchmark
+```
+
+The generated JSON report is written to:
+
+```text
+/tmp/careercraft-benchmark.json
+```
+
+To evaluate a populated labelled dataset with the optional semantic matcher:
+
+```bash
+cd backend
+
+../.venv/bin/python -m app.benchmark \
+  --dataset ../data/your-labelled-dataset.csv \
+  --output /tmp/careercraft-benchmark.json \
+  --include-semantic
+```
+
+The included `data/benchmark_sample.csv` contains synthetic, LLM-assisted
+examples for verifying that the benchmark pipeline works. Its metrics must
+not be presented as evidence of real model quality.
+
+The current benchmark reports:
+
+- Mean absolute error
+- Pearson correlation
+- Spearman correlation
+- Per-pair deterministic and semantic scores
+
+Ranking metrics such as Recall@1, Recall@5, and nDCG@5 are deferred until
+the dataset contains multiple candidate resumes grouped under each job query.
