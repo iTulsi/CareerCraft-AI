@@ -31,6 +31,17 @@ class SemanticMatch(BaseModel):
     note: str
 
 
+class EvaluationComparison(BaseModel):
+    status: Literal["available", "unavailable", "not_requested"]
+    deterministic_score: float = Field(ge=0, le=100)
+    semantic_score: float | None = Field(default=None, ge=0, le=100)
+    score_gap: float | None = Field(default=None, ge=0, le=100)
+    gap_category: Literal["close", "moderate", "wide", "not_available"]
+    interpretation: str
+
+
+
+
 class InterviewQuestion(BaseModel):
     category: Literal["technical", "learning_gap", "behavioral"]
     question: str
@@ -41,6 +52,7 @@ class AnalyzeResponse(BaseModel):
     result: SkillMatch
     assessment: AnalysisAssessment
     semantic: SemanticMatch
+    evaluation: EvaluationComparison
     interview_questions: list[InterviewQuestion]
     methodology: str
 

@@ -365,6 +365,52 @@ textarea::placeholder {
   line-height: 1.6;
 }
 
+.comparison-card,
+.interview-card {
+  grid-column: 1 / -1;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.comparison-grid div {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.comparison-grid span {
+  display: block;
+  color: #949caf;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.comparison-grid strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 1.45rem;
+}
+
+.comparison-category {
+  margin: 20px 0 8px;
+  color: #bdb2ff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+#evaluation-interpretation {
+  margin: 0;
+  color: #aeb5c6;
+  line-height: 1.6;
+}
+
 .interview-card {
   grid-column: 1 / -1;
 }
@@ -441,7 +487,8 @@ textarea::placeholder {
 
   .workspace,
   .results,
-  .score-breakdown {
+  .score-breakdown,
+  .comparison-grid {
     grid-template-columns: 1fr;
   }
 }

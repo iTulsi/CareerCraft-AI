@@ -9,12 +9,14 @@ from app.models import (
     AnalyzeRequest,
     AnalysisAssessment,
     AnalyzeResponse,
+    EvaluationComparison,
     InterviewQuestion,
     ResumeParseResponse,
     SemanticMatch,
     SkillMatch,
 )
 from app.services.analysis_service import calculate_resume_assessment
+from app.services.evaluation import build_evaluation_comparison
 from app.services.interview_questions import build_interview_questions
 from app.services.document_parser import (
     DocumentParseError,
@@ -92,6 +94,11 @@ def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
         job_description=payload.job_description,
     )
     semantic = _semantic_result(payload)
+    evaluation = build_evaluation_comparison(
+        deterministic_score=float(skill_match["match_score"]),
+        semantic_score=semantic.score,
+        semantic_status=semantic.status,
+    )
     interview_questions = build_interview_questions(
         matched_skills=list(skill_match["matched_skills"]),
         missing_skills=list(skill_match["missing_skills"]),
@@ -102,6 +109,7 @@ def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
         result=SkillMatch(**skill_match),
         assessment=AnalysisAssessment(**assessment),
         semantic=semantic,
+        evaluation=EvaluationComparison(**evaluation),
         interview_questions=[
             InterviewQuestion(**question)
             for question in interview_questions

@@ -17,6 +17,15 @@ const missingSkills = document.querySelector("#missing-skills");
 const foundSections = document.querySelector("#found-sections");
 const missingSections = document.querySelector("#missing-sections");
 const recommendations = document.querySelector("#recommendations");
+const evaluationDeterministic = document.querySelector(
+  "#evaluation-deterministic"
+);
+const evaluationSemantic = document.querySelector("#evaluation-semantic");
+const evaluationGap = document.querySelector("#evaluation-gap");
+const evaluationCategory = document.querySelector("#evaluation-category");
+const evaluationInterpretation = document.querySelector(
+  "#evaluation-interpretation"
+);
 const interviewQuestions = document.querySelector("#interview-questions");
 const methodology = document.querySelector("#methodology");
 const downloadReportButton = document.querySelector(
@@ -137,6 +146,7 @@ function renderResults(payload) {
     "No standard sections missing"
   );
   renderRecommendations(payload.assessment.recommendations);
+  renderEvaluationComparison(payload.evaluation);
   renderInterviewQuestions(payload.interview_questions);
   methodology.textContent = payload.methodology;
   results.hidden = false;
@@ -175,6 +185,29 @@ function renderRecommendations(items) {
     listItem.textContent = item;
     recommendations.append(listItem);
   }
+}
+
+function renderEvaluationComparison(evaluation) {
+  const isAvailable = evaluation.status === "available";
+
+  evaluationDeterministic.textContent =
+    `${evaluation.deterministic_score}%`;
+  evaluationSemantic.textContent = isAvailable
+    ? `${evaluation.semantic_score}%`
+    : "—";
+  evaluationGap.textContent = isAvailable
+    ? `${evaluation.score_gap} points`
+    : "—";
+
+  evaluationCategory.textContent = isAvailable
+    ? `${formatLabel(evaluation.gap_category)} difference`
+    : "Semantic comparison unavailable";
+
+  evaluationInterpretation.textContent = evaluation.interpretation;
+}
+
+function formatLabel(value) {
+  return value.replaceAll("_", " ");
 }
 
 function downloadAnalysisReport(event) {
