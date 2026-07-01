@@ -12,3 +12,5 @@ def test_health_endpoint() -> None:
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
     assert response.json()["service"] == "careercraft-ai"
+    assert response.json()["version"] == "0.3.0"
+    assert response.headers["content-type"].startswith("application/json")
