@@ -42,6 +42,19 @@ curl --fail \
 Set `include_semantic` to `true` only when the optional machine-learning
 requirements are installed.
 
+## Download an analysis report
+
+```bash
+curl --fail \
+  -X POST \
+  --form-string 'payload={"assessment":{"overall_score":81}}' \
+  --output careercraft-analysis.txt \
+  http://127.0.0.1:8000/api/report
+```
+
+The endpoint accepts analysis data as a JSON form field and returns a
+downloadable text report.
+
 ## Interactive documentation
 
 Open `http://127.0.0.1:8000/docs` to inspect schemas and execute requests from
