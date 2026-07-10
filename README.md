@@ -404,6 +404,16 @@ Embedding similarity can find related meaning beyond exact keywords, but a simil
 
 The frontend is static and communicates with one FastAPI application. Serving both from one process keeps local development and deployment straightforward without adding an unnecessary second service.
 
+## Data Handling and Privacy
+
+The current application processes uploaded resume content and pasted job
+descriptions for the active request. It does not write this content to a
+database or application-managed persistent storage.
+
+Generated report responses use `Cache-Control: no-store`. Users should still
+avoid submitting unnecessary sensitive personal information to public
+deployments.
+
 ## Current Limitations
 
 - The score is not an official employer ATS score or hiring probability.
