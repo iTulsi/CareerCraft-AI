@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from app.services.analysis_insights import (
+    analyze_resume_quality,
+    build_skill_priorities,
+)
 from app.services.baseline_matcher import calculate_skill_match
 from app.services.section_parser import detect_sections
 
@@ -56,6 +60,13 @@ def calculate_resume_assessment(
         "recommendations": _build_recommendations(
             missing_skills=list(skill_match["missing_skills"]),
             missing_sections=missing_sections,
+            skill_priorities=build_skill_priorities(
+                job_description,
+                list(skill_match["missing_skills"]),
+            ),
+            quality_suggestions=list(
+                analyze_resume_quality(resume_text)["suggestions"]
+            ),
         ),
     }
 
@@ -65,8 +76,21 @@ def calculate_resume_assessment(
 def _build_recommendations(
     missing_skills: list[str],
     missing_sections: list[str],
+    skill_priorities: list[dict[str, object]],
+    quality_suggestions: list[str],
 ) -> list[str]:
     recommendations: list[str] = []
+
+    high_priority_missing = [
+        str(item["skill"])
+        for item in skill_priorities
+        if item["priority"] == "high"
+    ]
+    if high_priority_missing:
+        recommendations.append(
+            "Prioritize truthful evidence or focused learning for the highest-demand "
+            f"gaps: {', '.join(high_priority_missing)}."
+        )
 
     if missing_skills:
         skill_list = ", ".join(missing_skills)
@@ -79,6 +103,12 @@ def _build_recommendations(
         recommendations.append(
             f"Add a dedicated {section} section with relevant, verifiable evidence."
         )
+
+    recommendations.extend(
+        suggestion
+        for suggestion in quality_suggestions
+        if suggestion not in recommendations
+    )
 
     if not recommendations:
         recommendations.append(

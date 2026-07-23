@@ -30,3 +30,19 @@ def test_recommendations_do_not_encourage_false_claims() -> None:
     assert any("only where truthful" in item for item in recommendations)
     assert any("Experience section" in item for item in recommendations)
     assert any("Education section" in item for item in recommendations)
+
+
+def test_recommendations_prioritize_required_missing_skills() -> None:
+    _, assessment = calculate_resume_assessment(
+        resume_text=(
+            "Skills\nPython\nProjects\n- Built a Python service.\n"
+            "Education\nB.Tech"
+        ),
+        job_description=(
+            "Python is required. AWS is required for deployment. "
+            "Docker is nice to have."
+        ),
+    )
+
+    assert assessment["recommendations"][0].endswith("aws.")
+    assert any("only where truthful" in item for item in assessment["recommendations"])
