@@ -78,3 +78,23 @@ def test_modern_engineering_vocabulary_is_detected() -> None:
         "generative ai",
         "mlops",
     }
+
+
+def test_match_result_exposes_resume_and_requested_skill_sets() -> None:
+    result = calculate_skill_match(
+        resume_text="Python, FastAPI, Docker and PostgreSQL.",
+        job_description="Python, FastAPI, AWS and PostgreSQL are required.",
+    )
+
+    assert result["resume_skills"] == [
+        "docker",
+        "fastapi",
+        "postgresql",
+        "python",
+    ]
+    assert result["required_skills"] == [
+        "aws",
+        "fastapi",
+        "postgresql",
+        "python",
+    ]

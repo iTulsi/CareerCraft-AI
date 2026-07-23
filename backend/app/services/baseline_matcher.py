@@ -107,6 +107,8 @@ def calculate_skill_match(resume_text: str, job_description: str) -> dict[str, o
 
     if not required_skills:
         return {
+            "resume_skills": sorted(resume_skills),
+            "required_skills": [],
             "matched_skills": [],
             "missing_skills": [],
             "match_score": 0.0,
@@ -117,6 +119,8 @@ def calculate_skill_match(resume_text: str, job_description: str) -> dict[str, o
     score = round((len(matched) / len(required_skills)) * 100, 2)
 
     return {
+        "resume_skills": sorted(resume_skills),
+        "required_skills": sorted(required_skills),
         "matched_skills": matched,
         "missing_skills": missing,
         "match_score": score,
