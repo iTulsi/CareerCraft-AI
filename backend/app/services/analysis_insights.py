@@ -156,3 +156,71 @@ def _first_skill_snippet(text: str, skill: str) -> str | None:
             return fragment[:180]
 
     return None
+
+
+ACTION_VERBS = {
+    "achieved",
+    "automated",
+    "built",
+    "created",
+    "delivered",
+    "designed",
+    "developed",
+    "implemented",
+    "improved",
+    "increased",
+    "launched",
+    "led",
+    "optimized",
+    "reduced",
+    "shipped",
+}
+BULLET_PATTERN = re.compile(r"^\s*(?:[-*•]|\d+[.)])\s+")
+NUMBER_PATTERN = re.compile(r"\b\d+(?:\.\d+)?(?:%|x|\+|k|m)?\b", re.IGNORECASE)
+
+
+def analyze_resume_quality(resume_text: str) -> dict[str, object]:
+    """Measure observable writing signals without assigning a hiring score."""
+    non_empty_lines = [line.strip() for line in resume_text.splitlines() if line.strip()]
+    bullet_lines = [line for line in non_empty_lines if BULLET_PATTERN.match(line)]
+    evidence_lines = bullet_lines or non_empty_lines
+
+    action_oriented = sum(_starts_with_action_verb(line) for line in evidence_lines)
+    quantified = sum(bool(NUMBER_PATTERN.search(line)) for line in evidence_lines)
+    bullet_count = len(bullet_lines)
+
+    suggestions: list[str] = []
+    if bullet_count == 0:
+        suggestions.append(
+            "Use concise bullet points for project and experience achievements."
+        )
+    if evidence_lines and action_oriented / len(evidence_lines) < 0.5:
+        suggestions.append(
+            "Start more achievement statements with specific action verbs."
+        )
+    if evidence_lines and quantified / len(evidence_lines) < 0.3:
+        suggestions.append(
+            "Quantify impact where truthful with counts, percentages, time, or scale."
+        )
+    if len(resume_text.split()) < 150:
+        suggestions.append(
+            "The extracted resume is brief; verify that parsing captured all sections."
+        )
+
+    return {
+        "word_count": len(resume_text.split()),
+        "bullet_count": bullet_count,
+        "action_oriented_statements": action_oriented,
+        "quantified_statements": quantified,
+        "quantified_statement_ratio": round(
+            (quantified / len(evidence_lines)) * 100 if evidence_lines else 0.0,
+            2,
+        ),
+        "suggestions": suggestions,
+    }
+
+
+def _starts_with_action_verb(line: str) -> bool:
+    cleaned = BULLET_PATTERN.sub("", line).strip()
+    first_word = re.split(r"\W+", cleaned.casefold(), maxsplit=1)[0]
+    return first_word in ACTION_VERBS

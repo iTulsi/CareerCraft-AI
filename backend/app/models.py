@@ -44,6 +44,15 @@ class EvaluationComparison(BaseModel):
 
 
 
+class ResumeQuality(BaseModel):
+    word_count: int = Field(ge=0)
+    bullet_count: int = Field(ge=0)
+    action_oriented_statements: int = Field(ge=0)
+    quantified_statements: int = Field(ge=0)
+    quantified_statement_ratio: float = Field(ge=0, le=100)
+    suggestions: list[str]
+
+
 class SkillEvidence(BaseModel):
     skill: str
     sections: list[str]
@@ -69,6 +78,7 @@ class AnalyzeResponse(BaseModel):
     assessment: AnalysisAssessment
     skill_priorities: list[SkillPriority]
     skill_evidence: list[SkillEvidence]
+    resume_quality: ResumeQuality
     semantic: SemanticMatch
     evaluation: EvaluationComparison
     interview_questions: list[InterviewQuestion]

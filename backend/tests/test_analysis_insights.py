@@ -30,3 +30,19 @@ def test_skill_evidence_identifies_sections_and_quantified_snippets() -> None:
             "quantified": True,
         }
     ]
+
+
+def test_resume_quality_counts_action_and_quantified_bullets() -> None:
+    from app.services.analysis_insights import analyze_resume_quality
+
+    quality = analyze_resume_quality(
+        "Experience\n"
+        "- Built an API used by 500 users.\n"
+        "- Improved response time by 40%.\n"
+        "- Responsible for documentation."
+    )
+
+    assert quality["bullet_count"] == 3
+    assert quality["action_oriented_statements"] == 2
+    assert quality["quantified_statements"] == 2
+    assert quality["quantified_statement_ratio"] == 66.67
