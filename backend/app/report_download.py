@@ -83,6 +83,76 @@ def _format_evaluation(value: Any) -> str:
     return "\n".join(lines)
 
 
+def _format_skill_priorities(value: Any) -> str:
+    if not isinstance(value, list) or not value:
+        return "- None"
+
+    lines: list[str] = []
+    for raw_item in value:
+        item = _mapping(raw_item)
+        skill = item.get("skill", "Unknown skill")
+        priority = item.get("priority", "unknown")
+        mentions = item.get("mentions", "—")
+        reason = item.get("reason", "No reason provided.")
+        lines.append(
+            f"- {skill}: {priority} priority ({mentions} mentions) — {reason}"
+        )
+    return "\n".join(lines)
+
+
+def _format_skill_evidence(value: Any) -> str:
+    if not isinstance(value, list) or not value:
+        return "- None"
+
+    lines: list[str] = []
+    for raw_item in value:
+        item = _mapping(raw_item)
+        skill = item.get("skill", "Unknown skill")
+        sections = ", ".join(item.get("sections", [])) or "Unknown section"
+        snippet = item.get("snippet") or "No concise evidence snippet found."
+        lines.append(f"- {skill} [{sections}]: {snippet}")
+    return "\n".join(lines)
+
+
+def _format_resume_quality(value: Any) -> str:
+    quality = _mapping(value)
+    if not quality:
+        return "Not included in this report payload."
+
+    return "\n".join(
+        [
+            f"Word count: {quality.get('word_count', '—')}",
+            f"Bullet points: {quality.get('bullet_count', '—')}",
+            "Action-oriented statements: "
+            f"{quality.get('action_oriented_statements', '—')}",
+            f"Quantified statements: {quality.get('quantified_statements', '—')}",
+            "Quantified statement ratio: "
+            f"{quality.get('quantified_statement_ratio', '—')}%",
+            "Suggestions:",
+            _format_list(quality.get("suggestions")),
+        ]
+    )
+
+
+def _format_job_requirements(value: Any) -> str:
+    requirements = _mapping(value)
+    if not requirements:
+        return "Not included in this report payload."
+
+    return "\n".join(
+        [
+            "Experience: "
+            + ", ".join(requirements.get("experience_requirements", [])),
+            "Seniority: "
+            + ", ".join(requirements.get("seniority_signals", [])),
+            "Education: "
+            + ", ".join(requirements.get("education_requirements", [])),
+            "Work arrangement: "
+            + ", ".join(requirements.get("work_arrangements", [])),
+        ]
+    )
+
+
 def build_analysis_report(payload: dict[str, Any]) -> str:
     assessment = _mapping(payload.get("assessment"))
     result = _mapping(payload.get("result"))
@@ -114,6 +184,22 @@ def build_analysis_report(payload: dict[str, Any]) -> str:
             "Missing skills",
             "--------------",
             _format_list(result.get("missing_skills")),
+            "",
+            "Job skill priorities",
+            "--------------------",
+            _format_skill_priorities(payload.get("skill_priorities")),
+            "",
+            "Resume evidence for matched skills",
+            "----------------------------------",
+            _format_skill_evidence(payload.get("skill_evidence")),
+            "",
+            "Resume writing diagnostics",
+            "--------------------------",
+            _format_resume_quality(payload.get("resume_quality")),
+            "",
+            "Explicit job requirements",
+            "-------------------------",
+            _format_job_requirements(payload.get("job_requirements")),
             "",
             "Detected resume sections",
             "------------------------",
