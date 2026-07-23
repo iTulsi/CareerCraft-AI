@@ -4,6 +4,7 @@ import re
 from collections.abc import Iterable
 
 from app.services.baseline_matcher import skill_terms
+from app.services.section_parser import detect_sections
 
 
 REQUIRED_CUES = {
@@ -95,3 +96,63 @@ def _count_skill_mentions(text: str, skill: str) -> int:
         )
         for term in skill_terms(skill)
     )
+
+
+SECTION_LABELS = {
+    "general": "General",
+    "summary": "Summary",
+    "skills": "Skills",
+    "experience": "Experience",
+    "projects": "Projects",
+    "education": "Education",
+    "certifications": "Certifications",
+    "achievements": "Achievements",
+}
+
+
+def build_skill_evidence(
+    resume_text: str,
+    matched_skills: Iterable[str],
+) -> list[dict[str, object]]:
+    """Return concise, inspectable resume evidence for every matched skill."""
+    sections = detect_sections(resume_text)
+    evidence: list[dict[str, object]] = []
+
+    for skill in sorted(set(matched_skills)):
+        matching_sections: list[str] = []
+        snippet: str | None = None
+
+        for section, section_text in sections.items():
+            if not _contains_skill(section_text, skill):
+                continue
+
+            matching_sections.append(SECTION_LABELS.get(section, section.title()))
+            if snippet is None:
+                snippet = _first_skill_snippet(section_text, skill)
+
+        evidence.append(
+            {
+                "skill": skill,
+                "sections": matching_sections,
+                "snippet": snippet,
+                "quantified": bool(
+                    snippet and re.search(r"\b\d+(?:\.\d+)?(?:%|x|\+)?\b", snippet)
+                ),
+            }
+        )
+
+    return evidence
+
+
+def _first_skill_snippet(text: str, skill: str) -> str | None:
+    fragments = [
+        fragment.strip(" \t-*•")
+        for fragment in re.split(r"\n+|(?<=[.!?])\s+", text)
+        if fragment.strip()
+    ]
+
+    for fragment in fragments:
+        if _contains_skill(fragment, skill):
+            return fragment[:180]
+
+    return None

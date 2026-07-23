@@ -13,10 +13,14 @@ from app.models import (
     InterviewQuestion,
     ResumeParseResponse,
     SemanticMatch,
+    SkillEvidence,
     SkillMatch,
     SkillPriority,
 )
-from app.services.analysis_insights import build_skill_priorities
+from app.services.analysis_insights import (
+    build_skill_evidence,
+    build_skill_priorities,
+)
 from app.services.analysis_service import calculate_resume_assessment
 from app.services.evaluation import build_evaluation_comparison
 from app.services.interview_questions import build_interview_questions
@@ -99,6 +103,10 @@ def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
         payload.job_description,
         list(skill_match["required_skills"]),
     )
+    skill_evidence = build_skill_evidence(
+        payload.resume_text,
+        list(skill_match["matched_skills"]),
+    )
     semantic = _semantic_result(payload)
     evaluation = build_evaluation_comparison(
         deterministic_score=float(skill_match["match_score"]),
@@ -116,6 +124,9 @@ def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
         assessment=AnalysisAssessment(**assessment),
         skill_priorities=[
             SkillPriority(**item) for item in skill_priorities
+        ],
+        skill_evidence=[
+            SkillEvidence(**item) for item in skill_evidence
         ],
         semantic=semantic,
         evaluation=EvaluationComparison(**evaluation),

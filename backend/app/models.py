@@ -44,6 +44,13 @@ class EvaluationComparison(BaseModel):
 
 
 
+class SkillEvidence(BaseModel):
+    skill: str
+    sections: list[str]
+    snippet: str | None
+    quantified: bool
+
+
 class SkillPriority(BaseModel):
     skill: str
     mentions: int = Field(ge=1)
@@ -61,6 +68,7 @@ class AnalyzeResponse(BaseModel):
     result: SkillMatch
     assessment: AnalysisAssessment
     skill_priorities: list[SkillPriority]
+    skill_evidence: list[SkillEvidence]
     semantic: SemanticMatch
     evaluation: EvaluationComparison
     interview_questions: list[InterviewQuestion]
