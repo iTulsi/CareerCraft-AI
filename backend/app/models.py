@@ -44,6 +44,13 @@ class EvaluationComparison(BaseModel):
 
 
 
+class SkillPriority(BaseModel):
+    skill: str
+    mentions: int = Field(ge=1)
+    priority: Literal["high", "medium", "low"]
+    reason: str
+
+
 class InterviewQuestion(BaseModel):
     category: Literal["technical", "learning_gap", "behavioral"]
     question: str
@@ -53,6 +60,7 @@ class InterviewQuestion(BaseModel):
 class AnalyzeResponse(BaseModel):
     result: SkillMatch
     assessment: AnalysisAssessment
+    skill_priorities: list[SkillPriority]
     semantic: SemanticMatch
     evaluation: EvaluationComparison
     interview_questions: list[InterviewQuestion]
