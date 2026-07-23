@@ -62,9 +62,13 @@ https://careercraft-ai-2tcf.onrender.com/docs
 - Extracts supported skills explicitly requested by the job description.
 - Identifies skills found in the resume.
 - Separates matched skills from missing skills.
-- Measures job-skill coverage.
-- Measures resume-section completeness.
-- Produces actionable recommendations based on actual gaps.
+- Canonicalizes common aliases such as Postgres/PostgreSQL and K8s/Kubernetes.
+- Ranks requested skills using explicit requirement cues and mention frequency.
+- Links matched skills to the exact resume sections and evidence snippets.
+- Extracts experience, seniority, education, and work-arrangement requirements.
+- Measures observable resume-writing signals such as quantified achievements.
+- Measures job-skill coverage and resume-section completeness.
+- Produces prioritized recommendations based on actual gaps and evidence quality.
 - Avoids presenting its result as an official employer ATS score.
 
 ### Optional semantic comparison
@@ -208,6 +212,7 @@ CareerCraft-AI/
 │   │   ├── benchmark.py
 │   │   ├── report_download.py
 │   │   └── services/
+│   │       ├── analysis_insights.py
 │   │       ├── analysis_service.py
 │   │       ├── baseline_matcher.py
 │   │       ├── benchmark.py

@@ -13,7 +13,7 @@ def test_openapi_schema_documents_public_endpoints() -> None:
 
     schema = response.json()
     assert schema["info"]["title"] == "CareerCraft AI API"
-    assert schema["info"]["version"] == "0.3.0"
+    assert schema["info"]["version"] == "0.4.0"
 
     expected_paths = {
         "/api/health",

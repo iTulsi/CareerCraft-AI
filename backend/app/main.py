@@ -46,7 +46,7 @@ FRONTEND_DIR = PROJECT_ROOT / "frontend"
 
 app = FastAPI(
     title="CareerCraft AI API",
-    version="0.3.0",
+    version="0.4.0",
     description="Explainable resume-to-job matching and interview intelligence.",
 )
 
@@ -69,7 +69,7 @@ def health() -> dict[str, str]:
     return {
         "status": "ok",
         "service": "careercraft-ai",
-        "version": "0.3.0",
+        "version": "0.4.0",
     }
 
 

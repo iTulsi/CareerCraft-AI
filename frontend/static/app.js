@@ -14,6 +14,10 @@ const semanticStatus = document.querySelector("#semantic-status");
 const scoreBar = document.querySelector("#score-bar");
 const matchedSkills = document.querySelector("#matched-skills");
 const missingSkills = document.querySelector("#missing-skills");
+const skillPriorities = document.querySelector("#skill-priorities");
+const skillEvidence = document.querySelector("#skill-evidence");
+const resumeQuality = document.querySelector("#resume-quality");
+const jobRequirements = document.querySelector("#job-requirements");
 const foundSections = document.querySelector("#found-sections");
 const missingSections = document.querySelector("#missing-sections");
 const recommendations = document.querySelector("#recommendations");
@@ -135,6 +139,10 @@ function renderResults(payload) {
   scoreBar.style.width = `${Math.min(Math.max(score, 0), 100)}%`;
   renderTags(matchedSkills, payload.result.matched_skills, "No matched skills");
   renderTags(missingSkills, payload.result.missing_skills, "No missing skills");
+  renderSkillPriorities(payload.skill_priorities || []);
+  renderSkillEvidence(payload.skill_evidence || []);
+  renderResumeQuality(payload.resume_quality || {});
+  renderJobRequirements(payload.job_requirements || {});
   renderTags(
     foundSections,
     payload.assessment.found_sections,
@@ -174,6 +182,62 @@ function renderTags(container, skills, emptyMessage) {
     const tag = document.createElement("span");
     tag.textContent = skill;
     container.append(tag);
+  }
+}
+
+function renderSkillPriorities(items) {
+  const lines = items.map(
+    (item) =>
+      `${item.skill}: ${item.priority} priority (${item.mentions} ` +
+      `${item.mentions === 1 ? "mention" : "mentions"}) — ${item.reason}`
+  );
+  renderTextList(skillPriorities, lines, "No requested skills detected");
+}
+
+function renderSkillEvidence(items) {
+  const lines = items.map((item) => {
+    const sections = item.sections.length > 0
+      ? item.sections.join(", ")
+      : "Unknown section";
+    const quantified = item.quantified ? " Quantified evidence found." : "";
+    return `${item.skill} [${sections}]: ${item.snippet || "No snippet found."}` +
+      quantified;
+  });
+  renderTextList(skillEvidence, lines, "No matched skill evidence found");
+}
+
+function renderResumeQuality(quality) {
+  const lines = [
+    `Words: ${quality.word_count ?? 0}`,
+    `Bullets: ${quality.bullet_count ?? 0}`,
+    `Action-oriented statements: ${quality.action_oriented_statements ?? 0}`,
+    `Quantified statements: ${quality.quantified_statements ?? 0}`,
+    `Quantified statement ratio: ${quality.quantified_statement_ratio ?? 0}%`,
+    ...(quality.suggestions || []),
+  ];
+  renderTextList(resumeQuality, lines, "No writing diagnostics available");
+}
+
+function renderJobRequirements(requirements) {
+  const lines = [
+    ["Experience", requirements.experience_requirements],
+    ["Seniority", requirements.seniority_signals],
+    ["Education", requirements.education_requirements],
+    ["Work arrangement", requirements.work_arrangements],
+  ]
+    .filter(([, values]) => Array.isArray(values) && values.length > 0)
+    .map(([label, values]) => `${label}: ${values.join(", ")}`);
+  renderTextList(jobRequirements, lines, "No explicit requirement signals detected");
+}
+
+function renderTextList(container, items, emptyMessage) {
+  container.replaceChildren();
+  const values = items.length > 0 ? items : [emptyMessage];
+
+  for (const item of values) {
+    const listItem = document.createElement("li");
+    listItem.textContent = item;
+    container.append(listItem);
   }
 }
 
