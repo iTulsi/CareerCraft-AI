@@ -50,3 +50,14 @@ def test_punctuation_around_skill_still_matches() -> None:
 
 def test_matching_remains_case_insensitive() -> None:
     assert extract_skills("Worked with FASTAPI and REACT.") == {"fastapi", "react"}
+
+
+def test_skill_aliases_are_returned_as_canonical_names() -> None:
+    assert extract_skills(
+        "Built ML services with sklearn and RESTful APIs using GH Actions."
+    ) >= {
+        "github actions",
+        "machine learning",
+        "rest api",
+        "scikit-learn",
+    }

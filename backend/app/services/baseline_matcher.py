@@ -38,6 +38,20 @@ DEFAULT_SKILLS = {
 }
 
 
+SKILL_ALIASES: dict[str, set[str]] = {
+    "github actions": {"github actions", "gh actions"},
+    "machine learning": {"machine learning", "ml"},
+    "rest api": {"rest api", "rest apis", "restful api", "restful apis"},
+    "scikit-learn": {"scikit-learn", "scikit learn", "sklearn"},
+}
+
+
+def skill_terms(skill: str) -> tuple[str, ...]:
+    """Return accepted spellings for one canonical skill name."""
+    terms = SKILL_ALIASES.get(skill, {skill})
+    return tuple(sorted(terms, key=len, reverse=True))
+
+
 def _normalize(text: str) -> str:
     lowered = text.lower()
     return re.sub(r"\s+", " ", lowered).strip()
@@ -48,7 +62,13 @@ def extract_skills(text: str, vocabulary: Iterable[str] = DEFAULT_SKILLS) -> set
     return {
         skill
         for skill in vocabulary
-        if re.search(rf"(?<![a-z0-9]){re.escape(skill)}(?![a-z0-9])", normalized)
+        if any(
+            re.search(
+                rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])",
+                normalized,
+            )
+            for term in skill_terms(skill)
+        )
     }
 
 
