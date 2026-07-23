@@ -44,6 +44,13 @@ class EvaluationComparison(BaseModel):
 
 
 
+class JobRequirements(BaseModel):
+    experience_requirements: list[str]
+    seniority_signals: list[str]
+    education_requirements: list[str]
+    work_arrangements: list[str]
+
+
 class ResumeQuality(BaseModel):
     word_count: int = Field(ge=0)
     bullet_count: int = Field(ge=0)
@@ -79,6 +86,7 @@ class AnalyzeResponse(BaseModel):
     skill_priorities: list[SkillPriority]
     skill_evidence: list[SkillEvidence]
     resume_quality: ResumeQuality
+    job_requirements: JobRequirements
     semantic: SemanticMatch
     evaluation: EvaluationComparison
     interview_questions: list[InterviewQuestion]

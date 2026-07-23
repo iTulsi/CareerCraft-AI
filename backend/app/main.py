@@ -11,6 +11,7 @@ from app.models import (
     AnalyzeResponse,
     EvaluationComparison,
     InterviewQuestion,
+    JobRequirements,
     ResumeParseResponse,
     ResumeQuality,
     SemanticMatch,
@@ -19,6 +20,7 @@ from app.models import (
     SkillPriority,
 )
 from app.services.analysis_insights import (
+    analyze_job_requirements,
     analyze_resume_quality,
     build_skill_evidence,
     build_skill_priorities,
@@ -110,6 +112,7 @@ def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
         list(skill_match["matched_skills"]),
     )
     resume_quality = analyze_resume_quality(payload.resume_text)
+    job_requirements = analyze_job_requirements(payload.job_description)
     semantic = _semantic_result(payload)
     evaluation = build_evaluation_comparison(
         deterministic_score=float(skill_match["match_score"]),
@@ -132,6 +135,7 @@ def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
             SkillEvidence(**item) for item in skill_evidence
         ],
         resume_quality=ResumeQuality(**resume_quality),
+        job_requirements=JobRequirements(**job_requirements),
         semantic=semantic,
         evaluation=EvaluationComparison(**evaluation),
         interview_questions=[

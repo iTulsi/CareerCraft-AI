@@ -224,3 +224,69 @@ def _starts_with_action_verb(line: str) -> bool:
     cleaned = BULLET_PATTERN.sub("", line).strip()
     first_word = re.split(r"\W+", cleaned.casefold(), maxsplit=1)[0]
     return first_word in ACTION_VERBS
+
+
+EXPERIENCE_PATTERN = re.compile(
+    r"\b\d+(?:\s*[-–]\s*\d+)?\+?\s*(?:years?|yrs?)\b",
+    re.IGNORECASE,
+)
+SENIORITY_TERMS = {
+    "intern": "Intern",
+    "internship": "Intern",
+    "junior": "Junior",
+    "entry level": "Entry level",
+    "mid level": "Mid level",
+    "senior": "Senior",
+    "lead": "Lead",
+    "staff": "Staff",
+    "principal": "Principal",
+}
+EDUCATION_TERMS = {
+    "bachelor": "Bachelor's degree",
+    "b.tech": "B.Tech",
+    "btech": "B.Tech",
+    "master": "Master's degree",
+    "m.tech": "M.Tech",
+    "mtech": "M.Tech",
+    "phd": "PhD",
+    "computer science": "Computer Science",
+}
+WORK_ARRANGEMENTS = {
+    "remote": "Remote",
+    "hybrid": "Hybrid",
+    "on-site": "On-site",
+    "onsite": "On-site",
+    "work from home": "Remote",
+}
+
+
+def analyze_job_requirements(job_description: str) -> dict[str, list[str]]:
+    """Extract only explicit role requirements and logistical signals."""
+    normalized = job_description.casefold()
+    experience_requirements = sorted(
+        {match.group(0) for match in EXPERIENCE_PATTERN.finditer(job_description)},
+        key=str.casefold,
+    )
+    seniority = _labels_found(normalized, SENIORITY_TERMS)
+    education = _labels_found(normalized, EDUCATION_TERMS)
+    work_arrangements = _labels_found(normalized, WORK_ARRANGEMENTS)
+
+    return {
+        "experience_requirements": experience_requirements,
+        "seniority_signals": seniority,
+        "education_requirements": education,
+        "work_arrangements": work_arrangements,
+    }
+
+
+def _labels_found(text: str, vocabulary: dict[str, str]) -> list[str]:
+    return sorted(
+        {
+            label
+            for term, label in vocabulary.items()
+            if re.search(
+                rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])",
+                text,
+            )
+        }
+    )

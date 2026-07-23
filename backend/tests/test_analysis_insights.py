@@ -46,3 +46,20 @@ def test_resume_quality_counts_action_and_quantified_bullets() -> None:
     assert quality["action_oriented_statements"] == 2
     assert quality["quantified_statements"] == 2
     assert quality["quantified_statement_ratio"] == 66.67
+
+
+def test_job_requirement_signals_are_extracted_without_inference() -> None:
+    from app.services.analysis_insights import analyze_job_requirements
+
+    requirements = analyze_job_requirements(
+        "Junior remote role requiring 2-3 years of experience and a "
+        "Bachelor's degree in Computer Science."
+    )
+
+    assert requirements["experience_requirements"] == ["2-3 years"]
+    assert requirements["seniority_signals"] == ["Junior"]
+    assert requirements["education_requirements"] == [
+        "Bachelor's degree",
+        "Computer Science",
+    ]
+    assert requirements["work_arrangements"] == ["Remote"]
