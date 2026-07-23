@@ -35,6 +35,28 @@ DEFAULT_SKILLS = {
     "aws",
     "azure",
     "gcp",
+    "postgresql",
+    "mysql",
+    "redis",
+    "node.js",
+    "express",
+    "django",
+    "celery",
+    "sqlalchemy",
+    "graphql",
+    "kubernetes",
+    "linux",
+    "ci/cd",
+    "oauth",
+    "jwt",
+    "vercel",
+    "cloudflare",
+    "serverless",
+    "openai",
+    "hugging face",
+    "generative ai",
+    "mlops",
+    "prompt engineering",
 }
 
 
@@ -43,6 +65,13 @@ SKILL_ALIASES: dict[str, set[str]] = {
     "machine learning": {"machine learning", "ml"},
     "rest api": {"rest api", "rest apis", "restful api", "restful apis"},
     "scikit-learn": {"scikit-learn", "scikit learn", "sklearn"},
+    "postgresql": {"postgresql", "postgres"},
+    "node.js": {"node.js", "nodejs", "node js"},
+    "kubernetes": {"kubernetes", "k8s"},
+    "ci/cd": {"ci/cd", "cicd", "continuous integration"},
+    "oauth": {"oauth", "oauth2"},
+    "hugging face": {"hugging face", "huggingface"},
+    "generative ai": {"generative ai", "gen ai", "genai"},
 }
 
 

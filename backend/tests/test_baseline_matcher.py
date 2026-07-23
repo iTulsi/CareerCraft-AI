@@ -61,3 +61,20 @@ def test_skill_aliases_are_returned_as_canonical_names() -> None:
         "rest api",
         "scikit-learn",
     }
+
+
+def test_modern_engineering_vocabulary_is_detected() -> None:
+    skills = extract_skills(
+        "Used Postgres, NodeJS, K8s, OAuth2, Redis, GraphQL, GenAI and MLOps."
+    )
+
+    assert skills >= {
+        "postgresql",
+        "node.js",
+        "kubernetes",
+        "oauth",
+        "redis",
+        "graphql",
+        "generative ai",
+        "mlops",
+    }
