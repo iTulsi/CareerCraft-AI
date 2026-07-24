@@ -27,3 +27,13 @@ def test_health_and_openapi_metadata_stay_aligned() -> None:
     assert schema.json()["info"]["title"] == API_TITLE
     assert schema.json()["info"]["version"] == API_VERSION
 
+def test_health_response_includes_security_headers() -> None:
+    response = client.get("/api/health")
+
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["referrer-policy"] == "no-referrer"
+    assert response.headers["permissions-policy"] == (
+        "camera=(), microphone=(), geolocation=()"
+    )
+
