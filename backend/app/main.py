@@ -5,6 +5,7 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.config import API_DESCRIPTION, API_TITLE, API_VERSION, SERVICE_NAME
 from app.models import (
     AnalyzeRequest,
     AnalysisAssessment,
@@ -45,9 +46,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 FRONTEND_DIR = PROJECT_ROOT / "frontend"
 
 app = FastAPI(
-    title="CareerCraft AI API",
-    version="0.4.0",
-    description="Explainable resume-to-job matching and interview intelligence.",
+    title=API_TITLE,
+    version=API_VERSION,
+    description=API_DESCRIPTION,
 )
 
 app.include_router(report_download_router)
@@ -68,8 +69,8 @@ def home() -> FileResponse:
 def health() -> dict[str, str]:
     return {
         "status": "ok",
-        "service": "careercraft-ai",
-        "version": "0.4.0",
+        "service": SERVICE_NAME,
+        "version": API_VERSION,
     }
 
 
