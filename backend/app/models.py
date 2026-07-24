@@ -9,10 +9,12 @@ class AnalyzeRequest(BaseModel):
     resume_text: str = Field(
         min_length=30,
         max_length=MAX_ANALYSIS_TEXT_CHARACTERS,
+        description="Plain text extracted from the candidate resume.",
     )
     job_description: str = Field(
         min_length=30,
         max_length=MAX_ANALYSIS_TEXT_CHARACTERS,
+        description="Complete job description used for the comparison.",
     )
     include_semantic: bool = False
 
