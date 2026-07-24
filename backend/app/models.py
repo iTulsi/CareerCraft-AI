@@ -10,7 +10,10 @@ class AnalyzeRequest(BaseModel):
         min_length=30,
         max_length=MAX_ANALYSIS_TEXT_CHARACTERS,
     )
-    job_description: str = Field(min_length=30)
+    job_description: str = Field(
+        min_length=30,
+        max_length=MAX_ANALYSIS_TEXT_CHARACTERS,
+    )
     include_semantic: bool = False
 
 
