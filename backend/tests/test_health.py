@@ -14,5 +14,3 @@ def test_health_endpoint() -> None:
     assert response.headers["content-type"].startswith("application/json")
     assert response.json()["service"] == "careercraft-ai"
     assert response.json()["version"] == "0.4.0"
-    assert response.json()["version"] == "0.4.0"
-    assert response.headers["content-type"].startswith("application/json")
