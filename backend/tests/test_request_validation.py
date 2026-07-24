@@ -41,4 +41,3 @@ def test_analyze_rejects_oversized_job_description() -> None:
         and error["type"] == "string_too_long"
         for error in response.json()["detail"]
     )
-

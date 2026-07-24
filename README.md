@@ -474,3 +474,18 @@ Built by **[Tulsi Sanskrati Tomar](https://github.com/iTulsi)**.
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+## API reliability safeguards
+
+CareerCraft applies small, explicit safeguards at the API boundary:
+
+- Resume text and job descriptions are limited to 100,000 characters each.
+- Invalid oversized requests return FastAPI/Pydantic `422` validation responses.
+- Service name and API version come from one shared configuration module.
+- Browser and API responses include `nosniff`, clickjacking, referrer, and
+  permissions-policy headers.
+- Regression tests keep the health response, OpenAPI metadata, and request
+  limits synchronized.
+
+These controls bound accidental resource usage without changing the analyzer's
+deterministic scoring behavior.

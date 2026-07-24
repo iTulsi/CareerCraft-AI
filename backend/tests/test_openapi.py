@@ -39,4 +39,3 @@ def test_openapi_documents_analysis_text_limits() -> None:
     )
     assert properties["resume_text"]["description"]
     assert properties["job_description"]["description"]
-

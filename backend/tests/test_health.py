@@ -36,4 +36,3 @@ def test_health_response_includes_security_headers() -> None:
     assert response.headers["permissions-policy"] == (
         "camera=(), microphone=(), geolocation=()"
     )
-
