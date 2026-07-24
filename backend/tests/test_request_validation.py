@@ -25,3 +25,20 @@ def test_analyze_rejects_oversized_resume_text() -> None:
         and error["type"] == "string_too_long"
         for error in response.json()["detail"]
     )
+
+def test_analyze_rejects_oversized_job_description() -> None:
+    response = client.post(
+        "/api/analyze",
+        json={
+            "resume_text": VALID_TEXT,
+            "job_description": "x" * (MAX_ANALYSIS_TEXT_CHARACTERS + 1),
+        },
+    )
+
+    assert response.status_code == 422
+    assert any(
+        error["loc"][-1] == "job_description"
+        and error["type"] == "string_too_long"
+        for error in response.json()["detail"]
+    )
+
