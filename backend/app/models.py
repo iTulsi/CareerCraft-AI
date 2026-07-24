@@ -2,9 +2,14 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from app.config import MAX_ANALYSIS_TEXT_CHARACTERS
+
 
 class AnalyzeRequest(BaseModel):
-    resume_text: str = Field(min_length=30)
+    resume_text: str = Field(
+        min_length=30,
+        max_length=MAX_ANALYSIS_TEXT_CHARACTERS,
+    )
     job_description: str = Field(min_length=30)
     include_semantic: bool = False
 
